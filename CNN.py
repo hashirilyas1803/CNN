@@ -33,3 +33,4 @@ def load_data(path):
     return X
 
 X = load_data("sign_data/train")
+X = np.expand_dims(X, axis=1)
