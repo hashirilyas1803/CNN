@@ -3,12 +3,12 @@ from numpy.lib.stride_tricks import as_strided
 
 class Pooling:
 
-    def __init__(self,filter_size,input,stride):
+    def __init__(self,filter_size,stride):
         self.filter_size = filter_size
-        self.input = input
         self.stride = stride
     
     def forward_prop(self,X):
+        self.input = X
         m, channels, iH, iW = X.shape
         oH = (iH - self.pool_size) // self.stride + 1
         oW = (iW - self.pool_size) // self.stride + 1
