@@ -4,7 +4,7 @@ class Convolution_Layer:
     def __init__(self, num_filters, filter_size, num_channels):
         self.num_filters = num_filters
         self.filter_size = filter_size
-        self.num_channels = num_channels  # This now needs to be explicitly provided during initialization
+        self.num_channels = num_channels
         # Initialize filters considering the number of input channels
         self.conv_filter = np.random.randn(num_filters, num_channels, filter_size, filter_size) / (filter_size * filter_size)
         # Initialize biases, one for each filter
