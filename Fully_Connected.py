@@ -4,11 +4,12 @@ from Regression import Regression
 
 class fully_connected:
 
-   def __init__(self, input_size, softmax_size):
-    self.weight = np.random.randn(softmax_size, 1, input_size) / input_size
-    self.bias = np.zeros((softmax_size, 1, 1))
+   def __init__(self):
 
-    def forward_prop(self, X):
+    def forward_prop(self, X, softmax_size):
+        self.input = X
+        self.weight = np.random.randn(softmax_size, input_size) / input_size
+        self.bias = np.zeros((softmax_size,1))
         # Perform the matrix multiplication
         Z = np.matmul(self.weight, X) + self.bias
 
@@ -25,12 +26,12 @@ class fully_connected:
         
         for i in range(self.input.shape[2]):
             
-            output = np.matmul(self.weight,self.input[:,:,i]) + self.bais
-            Af = Regression.sigmoid(self,output)
+            output = np.matmul(self.weight,self.input[:,i]) + self.bais
+            Af = Regression.sigmoid(output)
 
-            dl_dw += np.matmul(Af - Y[i,:], self.input[:,:,i].T)
+            dl_dw += np.matmul(Af - Y[i,:], self.input[:,i].T)
             dl_db += np.matmul(Af- Y[i,:],np.ones(self.bais.shape).T)
-            dl_back[:,:,i] = (np.matmul(Af - Y[i,:], self.weight)).T
+            dl_back[:,i] = (np.matmul(Af - Y[i,:], self.weight)).T
 
         self.weight = self.weight - (learning_rate*dl_dw/Y.shape[1])
         self.bais = self.bais - (learning_rate*dl_db/Y.shape[1])

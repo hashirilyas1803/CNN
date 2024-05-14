@@ -3,10 +3,19 @@ from Regression import Regression
 
 class intermediate_connect:
 
-    def __init__(self,input_size,softmax_size):
-        self.input = input
+    def __init__(self):
+        pass
+
+    def forward_prop(self, X, softmax_size):
         self.weight = np.random.randn(softmax_size,input_size)/input_size
         self.bais = np.zeros(softmax_size,1)
+        # Perform the matrix multiplication
+        Z = np.matmul(self.weight, X) + self.bias
+
+        # Apply the ReLU activation function
+        A = np.maximum(0, Z)
+
+        return A
         
     def backward_prop(self,learning_rate,dl_back):
     
@@ -18,12 +27,12 @@ class intermediate_connect:
         
         for i in range(self.input.shape[2]):
 
-            output = np.matmul(self.weight,self.input[:,:,i]) + self.bais
+            output = np.matmul(self.weight,self.input[:,i]) + self.bais
             dZ = Regression.der_sigmoid(output)*dA[:,:,i]
 
-            dl_dw += np.matmul(dZ, self.input[:,:,i].T)
+            dl_dw += np.matmul(dZ, self.input[:,i].T)
             dl_db += np.matmul(dZ,np.ones(self.bais.shape).T)
-            dl_back[:,:,i] = (np.matmul(dZ, self.weight)).T
+            dl_back[:,i] = (np.matmul(dZ, self.weight)).T
 
         self.weight = self.weight - (learning_rate*dl_dw/self.input.shape[2])
         self.bais = self.bais - (learning_rate*dl_db/self.input.shape[2])

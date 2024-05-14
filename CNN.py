@@ -4,6 +4,7 @@ import numpy as np
 import Convolution_Layer
 import Pooling
 import Fully_Connected
+import intermediate_connect
 
 def main():
     # Learning Rate
@@ -48,7 +49,6 @@ def main():
         for i in range(5):
             A = fully_connected[i].forward_prop(A)
         # Backward Propagation
-        
 
             
 
