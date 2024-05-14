@@ -3,8 +3,8 @@ from numpy.lib.stride_tricks import as_strided
 
 class Pooling:
 
-    def __init__(self,filter_size,stride):
-        self.filter_size = filter_size
+    def __init__(self,pool_size,stride):
+        self.pool_size = pool_size
         self.stride = stride
     
     def forward_prop(self,X):
@@ -26,15 +26,15 @@ class Pooling:
     def backward_prop(self,dl_back):
 
         if len(dl_back.shape) != len(self.input.shape):
-            p = dl_back.reshape(self.input.shape[0],self.input.shape[1],self.filter_size,self.filter_size)
+            p = dl_back.reshape(self.input.shape[0],self.input.shape[1],self.pool_size,self.pool_size)
 
         dl_back = np.zeros(self.input.shape)
 
         for i in range(p.shape[0]):
             for j in range(p.shape[1]):
-                for k in range(self.input.shape[3]/self.filter_size):
-                    for l in range(self.input.shape[3]/self.filter_size):
-                        block = self.input[i, j, k * self.input.shape[3] / self.filter_size:(k+1) * self.input.shape[3] / self.filter_size, l * self.input.shape[3] / self.filter_size:(l+1) * self.input.shape[3] / self.filter_size]
+                for k in range(self.input.shape[3]/self.pool_size):
+                    for l in range(self.input.shape[3]/self.pool_size):
+                        block = self.input[i, j, k * self.input.shape[3] / self.pool_size:(k+1) * self.input.shape[3] / self.pool_size, l * self.input.shape[3] / self.pool_size:(l+1) * self.input.shape[3] / self.pool_size]
                         max_index_flat = np.argmax(block)
                         max_index_2d = np.unravel_index(max_index_flat, block.shape)
                         dl_back[i,j,max_index_2d[0],max_index_2d[1]] = p[i,j,max_index_2d[0],max_index_2d[1]]
