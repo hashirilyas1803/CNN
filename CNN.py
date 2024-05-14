@@ -39,6 +39,7 @@ def main():
     for i in range(5):
         pass
 
+    n = [10,8,4,2]
     for i in range(10):
         # Forward Propagation
         Z = conv_layers[0].forward_prop(X)
@@ -46,16 +47,24 @@ def main():
         for j in range(1,15):
             Z = conv_layers[j].forward_prop(A)
             A = pool_layers[j].forward_prop(Z)
-        for i in range(5):
-            A = fully_connected[i].forward_prop(A)
+        for j in range(4):
+            if j != 4:
+                A = intermediate_connect[j].forward_prop(A,j)
+            if(j == 4):
+                A = fully.forward_prop(A,1)
+
         # Backward Propagation
+        dl_back = fully.backward_prop(alpha,y)
 
+        for i in range(4,0,-1):
+            dl_back = intermediate_connect[i].backward_prop(alpha,dl_back)
+        for j in range(15,1,-1):
+            dl_back = pool_layers[j].backward_prop(dl_back)
+            dl_back = conv_layers[j].backward_prop(dl_back)
             
-
-
-        
-
-
+        dl_back = pool_layers[0].backward_prop(dl_back)
+        dl_back = conv_layers[0].bacward_prop(dl_back)
+    
 def load_data(path):
     # create a list to hold all your images
     data = []
