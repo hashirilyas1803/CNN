@@ -23,11 +23,20 @@ class Pooling:
 
         return output
 
-    def backward_prop(self,dl_out):
+    def backward_prop(self,dl_back):
 
-        p = dl_out.reshape(self.input.shape[0],self.input.shape[1],self.input.shape[2],self.input.shape[3])
-        print(p)
+        p = dl_back.reshape(self.filter_size,self.filter_size,self.input.shape[2],self.input.shape[3])
+        dl_back = np.zeros(self.input.shape)
 
-        return
+        for i in range(p.shape[3]):
+            for j in range(p.shape[2]):
+                for k in range(self.filter_size):
+                    for l in range(self.filter_size):
+                        block = self.input[k*self.filter_size:(k+1)*self.filter_size, l*self.filter_size:(l+1)*self.filter_size,j,i]
+                        max_index_flat = np.argmax(block)
+                        max_index_2d = np.unravel_index(max_index_flat, block.shape)
+                        dl_back[max_index_2d[0],max_index_2d[1],j,i] = p[max_index_2d[0],max_index_2d[1],j,i]
+                
+        return dl_back
 
     
