@@ -6,6 +6,8 @@ import Pooling
 import Fully_Connected
 
 def main():
+    # Learning Rate
+    alpha = 0.1
     if os.path.exists('arrays.npz'):
         # If the file exists, load the data
         data = np.load('arrays.npz')
@@ -24,8 +26,8 @@ def main():
         x -= 2
     stride = [1,2]
 
-    conv_layers.append(Convolution_Layer(l[i],3,1))
-    for i in range(15):
+    conv_layers.append(Convolution_Layer(l[0],3,1))
+    for i in range(1,15):
         conv_layers.append(Convolution_Layer(l[i],3,conv_layers[i].channels))
         if i < 8:
             pool_layers.append(Pooling(3,stride[1]))
@@ -36,6 +38,19 @@ def main():
     for i in range(5):
         pass
 
+    for i in range(10):
+        # Forward Propagation
+        Z = conv_layers[0].forward_prop(X)
+        A = pool_layers[0].forward_prop(Z)
+        for j in range(1,15):
+            Z = conv_layers[j].forward_prop(A)
+            A = pool_layers[j].forward_prop(Z)
+        for i in range(5):
+            A = fully_connected[i].forward_prop(A)
+        # Backward Propagation
+        
+
+            
 
 
         

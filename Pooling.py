@@ -25,18 +25,20 @@ class Pooling:
 
     def backward_prop(self,dl_back):
 
-        p = dl_back.reshape(self.filter_size,self.filter_size,self.input.shape[2],self.input.shape[3])
+        if len(dl_back.shape) != len(self.input.shape):
+            p = dl_back.reshape(self.input.shape[0],self.input.shape[1],self.filter_size,self.filter_size)
+
         dl_back = np.zeros(self.input.shape)
 
-        for i in range(p.shape[3]):
-            for j in range(p.shape[2]):
-                for k in range(self.filter_size):
-                    for l in range(self.filter_size):
-                        block = self.input[k*self.filter_size:(k+1)*self.filter_size, l*self.filter_size:(l+1)*self.filter_size,j,i]
+        for i in range(p.shape[0]):
+            for j in range(p.shape[1]):
+                for k in range(self.input.shape[3]/self.filter_size):
+                    for l in range(self.input.shape[3]/self.filter_size):
+                        block = self.input[i, j, k * self.input.shape[3] / self.filter_size:(k+1) * self.input.shape[3] / self.filter_size, l * self.input.shape[3] / self.filter_size:(l+1) * self.input.shape[3] / self.filter_size]
                         max_index_flat = np.argmax(block)
                         max_index_2d = np.unravel_index(max_index_flat, block.shape)
-                        dl_back[max_index_2d[0],max_index_2d[1],j,i] = p[max_index_2d[0],max_index_2d[1],j,i]
-                
+                        dl_back[i,j,max_index_2d[0],max_index_2d[1]] = p[i,j,max_index_2d[0],max_index_2d[1]]
+
         return dl_back
 
     
