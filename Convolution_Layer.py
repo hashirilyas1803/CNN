@@ -11,6 +11,7 @@ class Convolution_Layer:
         self.biases = np.zeros(num_filters)
 
     def forward_prop(self, X):
+        self.input = X
         # Dimensions of input X
         m, channels, iH, iW = X.shape
         
@@ -43,31 +44,36 @@ class Convolution_Layer:
         # Transpose the result to match the output shape (m, num_filters, oH, oW)
         return convolved.transpose(0, 3, 1, 2)
     
-    def conv_backward(dL_dA, X, b):
-    # Dimensions of input, filters
-        M, C, H, W = X.shape
-        F, _, HH, WW = W.shape
+    def backward_prop(self,dL_dA, lr):
+
+        M, C, H, W = self.input.shape
+        F, _, HH, WW = self.conv_filter.shape
         _, _, H_out, W_out = dL_dA.shape
-        
-        # Initialize gradients
-        dL_dW = np.zeros_like(W)
-        dL_db = np.zeros_like(b)
-        
-        # Compute gradients
-        for i in range(M):  # For each image in the batch
-            for f in range(F):  # For each filter
+
+
+        dL_dW = np.zeros_like(self.conv_filter)
+        dL_db = np.zeros_like(self.biases)
+        dL_dX = np.zeros_like(self.input)
+
+
+        for i in range(M):
+            for f in range(F): 
                 for h in range(H_out):
                     for w in range(W_out):
-                        # Window of the input involved in this part of the output
+
                         window = X[i, :, h:h+HH, w:w+WW]
-                        
-                        # Gradient of the loss w.r.t. the filter weights
+
+
                         dL_dW[f] += dL_dA[i, f, h, w] * window
-                        
-                        # Gradient of the loss w.r.t. the bias
+
+
                         dL_db[f] += dL_dA[i, f, h, w]
-        
-        # Optional: Include regularization terms if needed
-        # Update rules (outside this function)
-        
-        return dL_dW, dL_db
+
+
+                        dL_dX[i, :, h:h+HH, w:w+WW] += W[f] * dL_dA[i, f, h, w]
+
+
+        self.conv_filter -= lr * dL_dW
+        self.biases -= lr * dL_db
+
+        return dL_dX
