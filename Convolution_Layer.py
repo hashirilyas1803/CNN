@@ -42,3 +42,32 @@ class Convolution_Layer:
 
         # Transpose the result to match the output shape (m, num_filters, oH, oW)
         return convolved.transpose(0, 3, 1, 2)
+    
+    def conv_backward(dL_dA, X, b):
+    # Dimensions of input, filters
+        M, C, H, W = X.shape
+        F, _, HH, WW = W.shape
+        _, _, H_out, W_out = dL_dA.shape
+        
+        # Initialize gradients
+        dL_dW = np.zeros_like(W)
+        dL_db = np.zeros_like(b)
+        
+        # Compute gradients
+        for i in range(M):  # For each image in the batch
+            for f in range(F):  # For each filter
+                for h in range(H_out):
+                    for w in range(W_out):
+                        # Window of the input involved in this part of the output
+                        window = X[i, :, h:h+HH, w:w+WW]
+                        
+                        # Gradient of the loss w.r.t. the filter weights
+                        dL_dW[f] += dL_dA[i, f, h, w] * window
+                        
+                        # Gradient of the loss w.r.t. the bias
+                        dL_db[f] += dL_dA[i, f, h, w]
+        
+        # Optional: Include regularization terms if needed
+        # Update rules (outside this function)
+        
+        return dL_dW, dL_db
