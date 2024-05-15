@@ -18,10 +18,33 @@
         </select>
         <h2>Upload Image</h2>
         <form enctype="multipart/form-data"><input type="file" accept="image/*" id="imageUpload" name="image"></form>
-        <input type="hidden" id="triggerModel" name="triggerModel" value="true"> <button type="submit">Train all</button>
+        <input type="hidden" id="triggerModel" name="triggerModel" value="true"> <button type="submit">Test all</button>
     </div>
 
     <script>
+        const submitButton = document.querySelector('button[type="submit"]');
+        submitButton.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent default form submission
+            const userId = document.getElementById('userSelect').value;
+            const triggerModel = document.getElementById('triggerModel').value;
+            var formData = new FormData();
+            formData.append('triggerModel', triggerModel);
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/process_image', true);
+            xhr.send(formData);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    // Successful response, redirect to the URL specified in the response
+                    window.location.href = xhr.responseURL;
+                } else {
+                    // Handle errors here
+                    console.error('Request failed with status:', xhr.status);
+                }
+            };
+        xhr.send(formData);
+        
+        
+        });
         const fileInput = document.getElementById('imageUpload');
         fileInput.addEventListener('change', function(event) {
         const userId = document.getElementById('userSelect').value;
@@ -49,7 +72,13 @@
         };
         xhr.send(formData);
         
-    });function submitData() {
+    });
+    
+    
+    
+    
+    
+    function submitData() {
             
         }
         
