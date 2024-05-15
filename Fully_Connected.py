@@ -31,21 +31,22 @@ class fully_connected:
         return A
     
     def backward_prop(self, learning_rate, Y):
-        dA = Y - self.input
         dl_dw = np.zeros(self.weight.shape) 
         dl_db = np.zeros(self.bias.shape)
         dl_back = np.zeros(self.input.shape)
-        
+
         for i in range(self.input.shape[1]):
             output = np.matmul(self.weight, self.input[:, i]) + self.bias
             Af = Regression.sigmoid(output)
 
-            dl_dw += np.matmul(Af - Y[i, :], self.input[:, i].T)
-            dl_db += np.matmul(Af - Y[i, :], np.ones(self.bias.shape).T)
-            dl_back[:, i] = (np.matmul(Af - Y[i, :], self.weight)).T
+            error = Af - Y[i, :].reshape(-1, 1)
 
-        self.weight -= learning_rate * dl_dw / Y.shape[1]
-        self.bias -= learning_rate * dl_db / Y.shape[1]
+            dl_dw += np.matmul(error, self.input[:, i].reshape(1, -1))
+            dl_db += error
+            dl_back[:, i] = np.matmul(self.weight.T, error).flatten()
+
+        self.weight -= learning_rate * dl_dw / Y.shape[0]
+        self.bias -= learning_rate * dl_db / Y.shape[0]
         self.save_weights()
 
         return dl_back

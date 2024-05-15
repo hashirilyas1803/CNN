@@ -15,7 +15,38 @@ def main():
     else:
         X, y = load_data("sign_data/train")
     X = np.expand_dims(X, axis=1)
+
+    alpha = 0.1
     print(X.shape)
+    c_layer = Convolution_Layer(1, 3)
+    A = c_layer.forward_prop(X)
+    print(c_layer.forward_prop(X).shape)
+    p_layer = Pooling(2)
+    Z = p_layer.forward_prop(A)
+    print(p_layer.forward_prop(A).shape)
+
+    f_layer = fully_connected(1)
+    Z = flatten_output(Z)
+    A = f_layer.forward_prop(Z)
+    print(f_layer.forward_prop(Z).shape)
+    print(Z.shape)
+
+    dl_back = f_layer.backward_prop(alpha, y)
+    print(dl_back.shape)
+    dl_back = dl_back.T.reshape(-1, 1, A.shape[1])
+    print(dl_back.shape)
+    dl_back = p_layer.backward_prop(dl_back)
+    print(dl_back.shape)
+    dl_back = c_layer.backward_prop(dl_back, alpha)
+    print(dl_back.shape)
+
+
+
+    # predictions = (A > 0.5).astype(int)
+    # accuracy = np.mean(predictions == y)
+    # print(f"Accuracy: {accuracy * 100:.2f}%")
+    
+    return
     
     # Initialize model components
     conv_layers, pool_layers, intermediate_connect_layer, fully = initialize_layers()
@@ -89,7 +120,7 @@ def flatten_output(A):
     # Flatten the output
     m = A.shape[0]
     flattened = A.reshape(m, -1)
-    return flattened
+    return flattened.T
 
 def train_model(X, y, conv_layers, pool_layers, intermediate_connect_layer, fully, alpha=0.1, epochs=10):
     for epoch in range(epochs):

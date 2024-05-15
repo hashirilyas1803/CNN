@@ -14,6 +14,10 @@ class Convolution_Layer:
         # Initialize filters and biases
         self.conv_filter = np.random.randn(num_filters,filter_size,filter_size) / (filter_size ** 2)
         self.biases = np.zeros(num_filters)
+        # self.conv_filter = [[1, 0, -1],
+        #                     [1, 0, -1],
+        #                     [1, 0, -1]]
+        # self.conv_filter = np.array(self.conv_filter)
 
     # def forward_prop(self, A_prev):
     #     # Get dimensions
@@ -122,28 +126,50 @@ class Convolution_Layer:
         # # Transpose the result to match the output shape (m, num_filters, oH, oW)
         # return convolved.transpose(0, 3, 1, 2)
     
-    def backward_prop(self, dL_dA, lr):
-        M, C, H, W = self.input.shape
-        F, _, HH, WW = self.conv_filter.shape
-        _, _, H_out, W_out = dL_dA.shape
+    def backward_prop(self, dL_dA, learning_rate):
+        m, channels, iH, iW = self.input.shape
+        kH, kW = self.filter_size, self.filter_size
+        _, num_filters, oH, oW = dL_dA.shape
 
+        # Initialize gradients
         dL_dW = np.zeros_like(self.conv_filter)
         dL_db = np.zeros_like(self.biases)
         dL_dX = np.zeros_like(self.input)
 
-        for i in range(M):
-            for f in range(F): 
-                for h in range(H_out):
-                    for w in range(W_out):
-                        window = self.input[i, :, h:h+HH, w:w+WW]
+        # Create image patches
+        patches_shape = (m, oH, oW, channels, kH, kW)
+        patches_strides = (self.input.strides[0], self.input.strides[2], self.input.strides[3], self.input.strides[1], self.input.strides[2], self.input.strides[3])
+        patches = as_strided(self.input, shape=patches_shape, strides=patches_strides)
+        patches = patches.reshape(m * oH * oW, channels * kH * kW)
 
-                        dL_dW[f] += dL_dA[i, f, h, w] * window
-                        dL_db[f] += dL_dA[i, f, h, w]
-                        dL_dX[i, :, h:h+HH, w:w+WW] += self.conv_filter[f] * dL_dA[i, f, h, w]
+        # Reshape filters for the dot operation
+        filters_reshaped = self.conv_filter.reshape(self.num_filters, channels * kH * kW)
 
-        self.conv_filter -= lr * dL_dW
-        self.biases -= lr * dL_db
+        # Gradient of the loss w.r.t. filters
+        dL_dA_reshaped = dL_dA.transpose(1, 2, 3, 0).reshape(num_filters, -1)
+        dL_dW = np.dot(dL_dA_reshaped, patches).reshape(self.conv_filter.shape)
 
+        # Gradient of the loss w.r.t. biases
+        dL_db = np.sum(dL_dA, axis=(0, 2, 3))
+
+        # Gradient of the loss w.r.t. the input
+        filters_reshaped_T = filters_reshaped.T
+        dL_dA_reshaped = dL_dA.transpose(1, 0, 2, 3).reshape(num_filters, -1)
+        for i in range(oH):
+            for j in range(oW):
+                h_start = i
+                w_start = j
+                h_end = h_start + kH
+                w_end = w_start + kW
+
+                patch = dL_dA[:, :, i, j].reshape(m, num_filters, 1, 1)
+                dL_dX[:, :, h_start:h_end, w_start:w_end] += np.sum(patch * filters_reshaped_T.T[:, :, None, None], axis=1)
+
+        # Update weights and biases
+        self.conv_filter -= learning_rate * dL_dW
+        self.biases -= learning_rate * dL_db
+
+        # Save updated weights
         self.save_weights()
 
         return dL_dX
