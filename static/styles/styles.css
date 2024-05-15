@@ -1,0 +1,60 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 400px;
+    /* Reduced container width */
+    margin: 100px auto;
+    /* Added some top margin for spacing */
+    padding: 20px;
+    border-radius: 10px;
+    /* Increased border radius */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    /* Increased box shadow for depth */
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+form {
+    background-color: #fff;
+    padding: 30px;
+    /* Increased padding for better spacing */
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    /* Increased padding for better input field appearance */
+    margin-bottom: 20px;
+    /* Increased margin bottom for better spacing */
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    /* Increased border radius */
+    box-sizing: border-box;
+}
+
+button[type="submit"] {
+    width: 100%;
+    background-color: #007bff;
+    color: #fff;
+    padding: 12px;
+    /* Increased padding for better button appearance */
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}

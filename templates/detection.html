@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ForgeryDetector</title>
+    <link href="{{ url_for('static', filename='styles/styles.css') }}" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="container">
+        <h2>Select User</h2>
+        <select id="userSelect">
+        {% for user_id, user_data in users.items() %}
+            <option value="{{ user_id }}">{{ user_data['name'] }}</option>
+        {% endfor %}
+        </select>
+        <h2>Upload Image</h2>
+        <form enctype="multipart/form-data"><input type="file" accept="image/*" id="imageUpload" name="image"></form>
+        <input type="hidden" id="triggerModel" name="triggerModel" value="true"> <button type="submit">Train all</button>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('imageUpload');
+        fileInput.addEventListener('change', function(event) {
+        const userId = document.getElementById('userSelect').value;
+        const triggerModel = document.getElementById('triggerModel').value; 
+        const file = event.target.files[0];
+        if (!file) {
+            alert('Please select an image file.');
+            return;
+        }
+        var formData = new FormData();
+        formData.append('userId', userId);
+        formData.append('image', file);
+        formData.append('triggerModel', triggerModel)
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/process_image', true);
+        xhr.send(formData);
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                // Successful response, redirect to the URL specified in the response
+                window.location.href = xhr.responseURL;
+            } else {
+                // Handle errors here
+                console.error('Request failed with status:', xhr.status);
+            }
+        };
+        xhr.send(formData);
+        
+    });function submitData() {
+            
+        }
+        
+    </script>
+</body>
+
+</html>

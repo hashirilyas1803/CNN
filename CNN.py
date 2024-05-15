@@ -15,6 +15,7 @@ def main():
     else:
         X, y = load_data("sign_data/train")
     X = np.expand_dims(X, axis=1)
+    print(X.shape)
     
     # Initialize model components
     conv_layers, pool_layers, intermediate_connect_layer, fully = initialize_layers()
@@ -88,7 +89,7 @@ def flatten_output(A):
     # Flatten the output
     m = A.shape[0]
     flattened = A.reshape(m, -1)
-    return flattened.T
+    return flattened
 
 def train_model(X, y, conv_layers, pool_layers, intermediate_connect_layer, fully, alpha=0.1, epochs=10):
     for epoch in range(epochs):

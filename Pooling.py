@@ -7,7 +7,7 @@ class Pooling:
         self.pool_size = pool_size
         self.stride = stride
     
-    def forward_prop(self,X):
+    def forward_prop(self, X):
         self.input = X
         m, channels, iH, iW = X.shape
         oH = (iH - self.pool_size) // self.stride + 1
@@ -15,7 +15,7 @@ class Pooling:
 
         # Create a sliding window view of the input
         shape = (m, channels, oH, oW, self.pool_size, self.pool_size)
-        strides = (X.strides[0], X.strides[1], X.strides[2]*self.stride, X.strides[3]*self.stride, X.strides[2], X.strides[3])
+        strides = (X.strides[0], X.strides[1], X.strides[2] * self.stride, X.strides[3] * self.stride, X.strides[2], X.strides[3])
         X_strided = as_strided(X, shape=shape, strides=strides)
 
         # Perform max pooling in a vectorized manner
