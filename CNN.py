@@ -20,9 +20,10 @@ def main():
 
     alpha = 0.01
     c_layer, p_layer, f_layer = initialize_layers()
-    train_model(X,y,c_layer, p_layer, f_layer,alpha,10)
-
-    test_model()
+    #Train
+    # train_model(X,y,c_layer, p_layer, f_layer,alpha,10)
+    #Test
+    print(test_model())
 
 def load_data(path):
     # Create a list to hold all your images

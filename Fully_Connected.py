@@ -16,16 +16,19 @@ class fully_connected:
         
         if os.path.exists(weights_path):
             data = np.load(weights_path)
-            self.weight = data.get(f'weight_{self.layer_id}')
-            self.bias = data.get(f'bias_{self.layer_id}')
+            self.weight = data.get(f'weight_{self.layer_id}', np.random.randn(self.number_of_neurons, X.shape[0]) / X.shape[0])
+            self.bias = data.get(f'bias_{self.layer_id}', np.zeros((self.number_of_neurons, 1)))
         else:
-            self.weight = np.random.randn(self.number_of_neurons, X.shape[0]) / X.shape[0] - 0.5
-            self.bias = np.zeros((self.number_of_neurons, 1)) - 0.5
+            self.weight = np.random.randn(self.number_of_neurons, X.shape[0]) / X.shape[0]
+            self.bias = np.zeros((self.number_of_neurons, 1))
         
         # Perform the matrix multiplication
         Z = np.matmul(self.weight, X) + self.bias
 
-        return Z
+        # Apply the ReLU activation function
+        A = np.maximum(0, Z)
+
+        return A
     
     def backward_prop(self, learning_rate, Y):
         dl_dw = np.zeros(self.weight.shape) 
@@ -34,7 +37,7 @@ class fully_connected:
 
         for i in range(self.input.shape[1]):
             output = np.matmul(self.weight, self.input[:, i]) + self.bias
-            Af = Regression.sigmoid(output)
+            Af = Regression.sigmoid( output)
 
             error = Af - Y[i, :].reshape(-1, 1)
 
