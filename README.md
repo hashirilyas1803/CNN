@@ -1,6 +1,6 @@
 # CNN Library
 
-**Authors:** Muhammad Hashir Ilyas (26972), Muhammad Imad Raza (26953), Saad Imam (27079)
+**Authors:** Muhammad Hashir Ilyas (26972), Muhammad Imad Raza (26953), Saad Imam (27079)  
 **Institute:** Institute of Business Administration (IBA), Karachi  
 
 This repository contains a modular Convolutional Neural Network (CNN) built entirely from scratch using Python and `NumPy`. This project was developed without any high-level machine learning frameworks (e.g., TensorFlow, PyTorch) to gain a fundamental understanding of forward propagation, calculus-based backpropagation, and tensor manipulation.
